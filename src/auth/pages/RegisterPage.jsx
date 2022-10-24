@@ -1,8 +1,10 @@
 import { Link as RouterLink } from 'react-router-dom'
 import { Button, Grid, Link, TextField, Typography } from '@mui/material'
-import React from 'react'
+import React, { useState } from 'react'
 import { AuthLayout } from '../layout/AuthLayout'
 import { useForm } from '../../hooks'
+import { useDispatch } from 'react-redux'
+import { startCreatingUserWithEmailPassword } from '../../store/auth/thunks'
 
 const formData = {
     email: 'mariana.ardissone7@gmail.com',
@@ -18,6 +20,9 @@ const formValidations = {
 
 export const RegisterPage = () => {
 
+  const dispatch = useDispatch();
+  const [formSubmitted, setformSubmitted] = useState(false);
+
   const { 
     formState, displayName, email, password, onInputChange,
     isFormValid, displayNameValid ,emailValid, passwordValid,
@@ -26,7 +31,11 @@ export const RegisterPage = () => {
 
   const onSubmit = ( event ) => {
     event.preventDefault();
-    console.log(formState);
+    setformSubmitted(true);
+
+    if( !isFormValid ) return;
+
+    dispatch(startCreatingUserWithEmailPassword(formState));
   }
 
   return (
@@ -43,7 +52,7 @@ export const RegisterPage = () => {
                   name='displayName'
                   value={ displayName }
                   onChange={ onInputChange }
-                  error= { !!displayNameValid }
+                  error= { !!displayNameValid && formSubmitted }
                   helperText={ displayNameValid }
                 />
               </Grid>
@@ -57,7 +66,7 @@ export const RegisterPage = () => {
                   name='email'
                   value={ email }
                   onChange={ onInputChange }
-                  error= { !!emailValid }
+                  error= { !!emailValid && formSubmitted }
                   helperText={ emailValid }
                 />
               </Grid>
@@ -71,7 +80,7 @@ export const RegisterPage = () => {
                   name='password'
                   value={ password }
                   onChange={ onInputChange }
-                  error= { !!passwordValid }
+                  error= { !!passwordValid && formSubmitted }
                   helperText={ passwordValid }
                 />
               </Grid>
